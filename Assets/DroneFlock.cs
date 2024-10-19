@@ -29,7 +29,6 @@ public class DroneFlock : MonoBehaviour
     float squareMaxSpeed;
     float squareNeighborRadius;
     float squareAvoidanceRadius;
-    public float SquareAvoidanceRadius { get { return squareAvoidanceRadius; } }
 
     // Start is called before the first frame update
     void Start()
