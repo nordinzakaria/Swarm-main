@@ -47,7 +47,6 @@ public class DroneFlock : MonoBehaviour
                 transform
                 );
             newDrone.name = "Drone " + i;
-            newDrone.Initialize(this);
             drones.Add(newDrone);
         }
     }

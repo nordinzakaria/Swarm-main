@@ -8,18 +8,12 @@ public class Bullet : MonoBehaviour
     internal float Speed;
     [Range(2f, 10f)]
     public float DestroyTime = 2f;
-    public bool IsGone {  get; set; } = false;
-
+ 
     IEnumerator SelfDestruct()
     {
         yield return new WaitForSeconds(DestroyTime);
     
         Destroy(gameObject);
-
-        /*
-        IsGone = true;
-        gameObject.SetActive(false);
-        */
     }
 
 

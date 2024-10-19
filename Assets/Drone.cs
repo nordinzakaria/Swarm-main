@@ -11,10 +11,6 @@ public class Drone : MonoBehaviour
     public int Temperature { set; get; } = 0;
     public bool Destroyed { get; set; }
 
-
-    DroneFlock agentFlock;
-    public DroneFlock AgentFlock { get { return agentFlock; } }
-
     Collider2D agentCollider;
     public Collider2D AgentCollider { get { return agentCollider; } }
 
@@ -37,11 +33,6 @@ public class Drone : MonoBehaviour
     private void Update()
     {
         Temperature = (int) (Random.value * 100);
-    }
-
-    public void Initialize(DroneFlock flock)
-    {
-        agentFlock = flock;
     }
 
     public void Move(Vector2 velocity)
