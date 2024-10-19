@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using static UnityEditor.Timeline.TimelinePlaybackControls;
 
 [RequireComponent(typeof(Collider2D))]
 public class Drone : MonoBehaviour
@@ -15,6 +17,10 @@ public class Drone : MonoBehaviour
 
     Collider2D agentCollider;
     public Collider2D AgentCollider { get { return agentCollider; } }
+
+    public float smoothTime = 0.3F;
+    private Vector2 velocity = Vector2.zero;
+
 
     // Start is called before the first frame update
     void Start()
@@ -42,5 +48,89 @@ public class Drone : MonoBehaviour
     {
         transform.up = velocity;
         transform.position += (Vector3)velocity * Time.deltaTime;
+    }
+
+    public Vector2 CalcMove(List<Transform> context, Vector2 center, float socialradiusSq, float radiusSq)
+    {
+        Vector2 alignMotion = Align(context);
+        Vector2 avoidMotion = AvoidOtherDrones(context, radiusSq);
+        Vector2 cohesiveMotion = EnsureCohesion(context);
+        Vector2 radiusMotion = StayInRadius(center, radiusSq);
+
+        alignMotion.Normalize();
+        avoidMotion.Normalize();
+        cohesiveMotion.Normalize();
+        radiusMotion.Normalize();
+
+        Vector2 currentVelocity = Vector2.one;
+
+        Vector2 motion = alignMotion * 0.2f + avoidMotion * 0.3f + 
+                         cohesiveMotion * 0.3f + radiusMotion * 0.2f;
+
+        transform.up = Vector2.SmoothDamp(transform.up, motion, ref velocity, smoothTime);
+        return motion;
+    }
+
+    public Vector2 Align(List<Transform> context)
+    {
+        //if no neighbors, maintain current alignment
+        if (context.Count == 0)
+            return transform.up;
+
+        //add all points together and average
+        Vector2 alignmentMove = Vector2.zero;
+        foreach (Transform item in context)
+        {
+            alignmentMove += (Vector2)item.transform.up;
+        }
+        alignmentMove /= context.Count;
+
+        return alignmentMove;
+    }
+
+    public Vector2 AvoidOtherDrones(List<Transform> context, float radiusSq)
+    {
+        //add all points together and average
+        Vector2 avoidanceMove = Vector2.zero;
+        int nAvoid = 0;
+        foreach (Transform item in context)
+        {
+            if (Vector2.SqrMagnitude(item.position - transform.position) < radiusSq)
+            {
+                nAvoid++;
+                avoidanceMove += (Vector2)(transform.position - item.position);
+            }
+        }
+        if (nAvoid > 0)
+            avoidanceMove /= nAvoid;
+
+        return avoidanceMove;
+    }
+
+    public Vector2 EnsureCohesion(List<Transform> context)
+    {
+        //add all points together and average
+        Vector2 cohesionMove = Vector2.zero;
+        foreach (Transform item in context)
+        {
+            cohesionMove += (Vector2)item.position;
+        }
+        cohesionMove /= context.Count;
+
+        //create offset from agent position
+        cohesionMove -= (Vector2)transform.position;
+        return cohesionMove;
+    }
+
+    public Vector2 StayInRadius(Vector2 center, float radius)
+    {
+        Vector2 centerOffset = center - (Vector2)transform.position;
+        float t = centerOffset.magnitude / radius;
+        if (t < 0.9f)
+        {
+            return Vector2.zero;
+        }
+
+        return centerOffset * t * t;
     }
 }

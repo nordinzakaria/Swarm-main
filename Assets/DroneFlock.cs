@@ -97,7 +97,7 @@ public class DroneFlock : MonoBehaviour
         {
             // decide on next movement direction
             List<Transform> context = GetNearbyObjects(drone);
-            Vector2 move = behavior.CalculateMove(drone, context, this);
+            Vector2 move = drone.CalcMove(context, Vector2.zero, squareAvoidanceRadius, 10);  //behavior.CalculateMove(drone, context, this);
             move *= driveFactor;
             if (move.sqrMagnitude > squareMaxSpeed)
             {
