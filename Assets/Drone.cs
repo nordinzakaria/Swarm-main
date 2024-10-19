@@ -71,7 +71,7 @@ public class Drone : MonoBehaviour
         return motion;
     }
 
-    public Vector2 Align(List<Transform> context)
+    private Vector2 Align(List<Transform> context)
     {
         //if no neighbors, maintain current alignment
         if (context.Count == 0)
@@ -88,7 +88,7 @@ public class Drone : MonoBehaviour
         return alignmentMove;
     }
 
-    public Vector2 AvoidOtherDrones(List<Transform> context, float radiusSq)
+    private Vector2 AvoidOtherDrones(List<Transform> context, float radiusSq)
     {
         //add all points together and average
         Vector2 avoidanceMove = Vector2.zero;
@@ -107,7 +107,7 @@ public class Drone : MonoBehaviour
         return avoidanceMove;
     }
 
-    public Vector2 EnsureCohesion(List<Transform> context)
+    private Vector2 EnsureCohesion(List<Transform> context)
     {
         //add all points together and average
         Vector2 cohesionMove = Vector2.zero;
@@ -122,7 +122,7 @@ public class Drone : MonoBehaviour
         return cohesionMove;
     }
 
-    public Vector2 StayInRadius(Vector2 center, float radius)
+    private Vector2 StayInRadius(Vector2 center, float radius)
     {
         Vector2 centerOffset = center - (Vector2)transform.position;
         float t = centerOffset.magnitude / radius;

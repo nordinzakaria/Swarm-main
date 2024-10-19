@@ -8,8 +8,6 @@ public class DroneFlock : MonoBehaviour
 {
     public Drone dronePrefab;
     List<Drone> drones = new List<Drone>();
-    public FlockBehavior behavior;
-
 
 
     [Range(10, 5000)]
@@ -54,41 +52,6 @@ public class DroneFlock : MonoBehaviour
         }
     }
 
-    void BubbleSort(Drone[] arr, int n) // O(N^2)
-    {
-        int i, j;
-        Drone temp;
-        bool swapped;               // let n =10
-        for (i = 0; i < n - 1; i++)  // i=0..9
-        {
-            swapped = false;
-            for (j = 0; j < n - i - 1; j++)   // i=0: j=0..9
-                                              // i=1; j=0..8
-                                              // i=2; j=0..7
-                                              // i
-            {
-                if (arr[j].Temperature > arr[j + 1].Temperature) // check whether to swap
-                {
-
-                    // Swap arr[j] and arr[j+1]
-                    temp = arr[j];
-                    arr[j] = arr[j + 1];
-                    arr[j + 1] = temp;
-                    swapped = true;
-                }
-            }
-
-            // If no two elements were
-            // swapped by inner loop, then break
-            //if (swapped == false)
-            //    break;
-        }
-    }
-
-    float AvgInterDroneDistance()
-    {
-        return 0;
-    }
 
     // Update is called once per frame
     void Update()
@@ -106,8 +69,14 @@ public class DroneFlock : MonoBehaviour
             drone.Move(move);
         }
 
+        ShootDrones();
+        
+        CleanUpDrones();
+    }
+
+    void ShootDrones()
+    {
         GameObject[] bullets = GameObject.FindGameObjectsWithTag("Bullet");
-        Debug.Log("Found " + bullets.Length + " bullets");
         foreach (GameObject bullet in bullets)
         {
             Bullet thebullet = bullet.GetComponent<Bullet>();
@@ -120,28 +89,6 @@ public class DroneFlock : MonoBehaviour
                 droneDestroyed.Destroy();
             }
         }
-        
-        /*
-        foreach (GameObject bullet in bullets)
-        {
-            Bullet thebullet = bullet.GetComponent<Bullet>();
-
-            if (thebullet.IsGone == true)
-            {
-                Destroy(bullet);
-            }
-        }
-        */
-        
-        List<Drone> whatremains = new List<Drone>();
-        foreach (Drone drone in drones)
-        {
-            if (drone.Destroyed == true)
-                Destroy(drone.gameObject);
-            else
-                whatremains.Add(drone);
-        }
-        drones = whatremains;
     }
 
     List<Transform> GetNearbyObjects(Drone drone)
@@ -156,6 +103,19 @@ public class DroneFlock : MonoBehaviour
             }
         }
         return context;
+    }
+
+    void CleanUpDrones()
+    {
+        List<Drone> whatremains = new List<Drone>();
+        foreach (Drone drone in drones)
+        {
+            if (drone.Destroyed == true)
+                Destroy(drone.gameObject);
+            else
+                whatremains.Add(drone);
+        }
+        drones = whatremains;
     }
 
 
